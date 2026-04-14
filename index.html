@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
+    <title>Harmonium Pro Elite</title>
+    <style>
+        :root { --gold: #d4af37; --bg: #0b0b0b; --panel: #1a1a1a; --wood: #2a1b0a; }
+        * { -webkit-tap-highlight-color: transparent !important; outline: none; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--gold); font-family: sans-serif; margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+
+        /* Rotate Screen Notice */
+        #landscape-notice {
+            display: none; position: fixed; inset: 0; background: #000;
+            z-index: 1000; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; color: var(--gold);
+        }
+        @media screen and (max-width: 900px) and (orientation: portrait) { #landscape-notice { display: flex; } }
+
+        /* UI Elements */
+        .top-bar { background: var(--wood); padding: 10px; text-align: center; border-bottom: 2px solid #3d2b1f; }
+        .dashboard { background: var(--panel); padding: 10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .unit { background: #222; padding: 8px; border-radius: 6px; text-align: center; box-shadow: inset 0 0 8px #000; }
+        .unit label { font-size: 9px; display: block; color: #888; margin-bottom: 4px; }
+        .ctrl-btn { background: #333; border: 1px solid #444; color: white; width: 30px; height: 30px; border-radius: 4px; cursor: pointer; }
+
+        .keyboard-frame { background: var(--wood); padding: 20px 10px; flex-grow: 1; display: flex; justify-content: center; overflow-x: auto; box-shadow: inset 0 10px 30px rgba(0,0,0,0.8); }
+        .keys-wrap { display: flex; position: relative; height: 100%; max-height: 250px; }
+        
+        .k { border-radius: 0 0 6px 6px; cursor: pointer; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 15px; font-weight: bold; font-size: 14px; transition: 0.1s; user-select: none; }
+        .w-key { width: 42px; height: 100%; background: linear-gradient(#eee, #fff); border: 1px solid #999; color: #999; z-index: 1; }
+        .b-key { width: 30px; height: 60%; background: linear-gradient(#111, #333); margin: 0 -15px; z-index: 2; color: #666; border: 1px solid #000; }
+        
+        .active { background: var(--gold) !important; color: white !important; transform: translateY(8px); box-shadow: inset 0 0 15px rgba(0,0,0,0.6); }
+
+        #load-screen { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999; }
+        .start-btn { background: none; border: 2px solid var(--gold); color: var(--gold); padding: 15px 60px; font-size: 1.2rem; border-radius: 4px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+
+<div id="landscape-notice"><h2>🔄 Rotate for Harmonium</h2></div>
+
+<div id="load-screen">
+    <h2 style="letter-spacing: 5px;">HARMONIUM PRO</h2>
+    <button class="start-btn" onclick="initApp()">START REPLICA</button>
+</div>
+
+<div class="top-bar">
+    <label style="font-size: 10px;">TRANSPOSE: </label>
+    <button class="ctrl-btn" onclick="shiftSemi(-1)">-</button>
+    <b style="margin: 0 10px; font-size: 1.2rem;"><span id="rootNote">C</span> (<span id="trans-val">0</span>)</b>
+    <button class="ctrl-btn" onclick="shiftSemi(1)">+</button>
+</div>
+
+<div class="dashboard">
+    <div class="unit"><label>VOL</label><input type="range" id="vol" min="0" max="100" value="30" oninput="changeVol()"></div>
+    <div class="unit"><label>OCTAVE</label><button class="ctrl-btn" onclick="shiftOct(-1)">-</button> <b id="oct-v">3</b> <button class="ctrl-btn" onclick="shiftOct(1)">+</button></div>
+    <div class="unit"><label>REEDS</label><button class="ctrl-btn" onclick="shiftStack(-1)">-</button> <b id="stk-v">0</b> <button class="ctrl-btn" onclick="shiftStack(1)">+</button></div>
+    <div class="unit"><label>REVERB</label><input type="checkbox" style="transform:scale(1.3)" onchange="toggleRev(this.checked)"></div>
+</div>
+
+<div class="keyboard-frame">
+    <div class="keys-wrap">
+        <div class="k w-key" id="k-55" onmousedown="p(55)" onmouseup="s(55)" ontouchstart="p(55)" ontouchend="s(55)">`</div>
+        <div class="k b-key" id="k-56" onmousedown="p(56)" onmouseup="s(56)" ontouchstart="p(56)" ontouchend="s(56)">1</div>
+        <div class="k w-key" id="k-57" onmousedown="p(57)" onmouseup="s(57)" ontouchstart="p(57)" ontouchend="s(57)">Q</div>
+        <div class="k b-key" id="k-58" onmousedown="p(58)" onmouseup="s(58)" ontouchstart="p(58)" ontouchend="s(58)">2</div>
+        <div class="k w-key" id="k-59" onmousedown="p(59)" onmouseup="s(59)" ontouchstart="p(59)" ontouchend="s(59)">W</div>
+        <div class="k w-key" id="k-60" onmousedown="p(60)" onmouseup="s(60)" ontouchstart="p(60)" ontouchend="s(60)">E</div>
+        <div class="k b-key" id="k-61" onmousedown="p(61)" onmouseup="s(61)" ontouchstart="p(61)" ontouchend="s(61)">4</div>
+        <div class="k w-key" id="k-62" onmousedown="p(62)" onmouseup="s(62)" ontouchstart="p(62)" ontouchend="s(62)">R</div>
+        <div class="k b-key" id="k-63" onmousedown="p(63)" onmouseup="s(63)" ontouchstart="p(63)" ontouchend="s(63)">5</div>
+        <div class="k w-key" id="k-64" onmousedown="p(64)" onmouseup="s(64)" ontouchstart="p(64)" ontouchend="s(64)">T</div>
+        <div class="k w-key" id="k-65" onmousedown="p(65)" onmouseup="s(65)" ontouchstart="p(65)" ontouchend="s(65)">Y</div>
+        <div class="k b-key" id="k-66" onmousedown="p(66)" onmouseup="s(66)" ontouchstart="p(66)" ontouchend="s(66)">7</div>
+        <div class="k w-key" id="k-67" onmousedown="p(67)" onmouseup="s(67)" ontouchstart="p(67)" ontouchend="s(67)">U</div>
+        <div class="k b-key" id="k-68" onmousedown="p(68)" onmouseup="s(68)" ontouchstart="p(68)" ontouchend="s(68)">8</div>
+        <div class="k w-key" id="k-69" onmousedown="p(69)" onmouseup="s(69)" ontouchstart="p(69)" ontouchend="s(69)">I</div>
+        <div class="k b-key" id="k-70" onmousedown="p(70)" onmouseup="s(70)" ontouchstart="p(70)" ontouchend="s(70)">9</div>
+        <div class="k w-key" id="k-71" onmousedown="p(71)" onmouseup="s(71)" ontouchstart="p(71)" ontouchend="s(71)">O</div>
+        <div class="k w-key" id="k-72" onmousedown="p(72)" onmouseup="s(72)" ontouchstart="p(72)" ontouchend="s(72)">P</div>
+        <div class="k b-key" id="k-73" onmousedown="p(73)" onmouseup="s(73)" ontouchstart="p(73)" ontouchend="s(73)">-</div>
+        <div class="k w-key" id="k-74" onmousedown="p(74)" onmouseup="s(74)" ontouchstart="p(74)" ontouchend="s(74)">[</div>
+        <div class="k b-key" id="k-75" onmousedown="p(75)" onmouseup="s(75)" ontouchstart="p(75)" ontouchend="s(75)">=</div>
+        <div class="k w-key" id="k-76" onmousedown="p(76)" onmouseup="s(76)" ontouchstart="p(76)" ontouchend="s(76)">]</div>
+        <div class="k w-key" id="k-77" onmousedown="p(77)" onmouseup="s(77)" ontouchstart="p(77)" ontouchend="s(77)">\</div>
+    </div>
+</div>
+
+<script>
+    let ctx, masterGain, reverbNode, audioBuffer;
+    let sources = {}, octave = 3, stack = 0, reverbState = false;
+    
+    // Exact mapping from Rajaraman's engine
+    const pcMap = { "`":55,"1":56,"q":57,"2":58,"w":59,"e":60,"4":61,"r":62,"5":63,"t":64,"y":65,"7":66,"u":67,"8":68,"i":69,"9":70,"o":71,"p":72,"-":73,"[":74,"=":75,"]":76,"\\":77 };
+    const baseNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    const octaveMap = [-36, -24, -12, 0, 12, 24, 36];
+
+    function initApp() {
+        document.getElementById('load-screen').style.display = 'none';
+        ctx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = ctx.createGain(); masterGain.gain.value = 0.3; masterGain.connect(ctx.destination);
+        
+        reverbNode = ctx.createConvolver();
+        fetch('reverb.wav').then(r => r.arrayBuffer()).then(d => ctx.decodeAudioData(d, b => reverbNode.buffer = b));
+        fetch('harmonium-kannan-orig.wav').then(r => r.arrayBuffer()).then(d => ctx.decodeAudioData(d, b => audioBuffer = b));
+        
+        if (navigator.requestMIDIAccess) {
+            navigator.requestMIDIAccess().then(m => {
+                for (let input of m.inputs.values()) {
+                    input.onmidimessage = (msg) => {
+                        let [s, n, v] = msg.data;
+                        if (s === 144 && v > 0) p(n); else if (s === 128 || (s === 144 && v === 0)) s(n);
+                    };
+                }
+            });
+        }
+    }
+
+    function p(n) {
+        if(!audioBuffer) return;
+        const keyEl = document.getElementById('k-'+n);
+        if(keyEl) keyEl.classList.add('active');
+        play(n + octaveMap[octave], n);
+        for(let i=1; i<=stack; i++) play(n + octaveMap[octave + i], n + "_s" + i);
+    }
+
+    function s(n) {
+        if(document.getElementById('k-'+n)) document.getElementById('k-'+n).classList.remove('active');
+        stopS(n); for(let i=1; i<=stack; i++) stopS(n + "_s" + i);
+    }
+
+    function play(idx, id) {
+        stopS(id); let src = ctx.createBufferSource();
+        src.buffer = audioBuffer; src.loop = true; src.loopStart = 0.5;
+        
+        let t = parseInt(document.getElementById('trans-val').innerText);
+        
+        /* MATCHING THE PITCH: 
+           If Transpose C sounded like A#, we were 2 semitones too high.
+           Original logic: (idx - 60 + t)
+           Fixed logic: (idx - 62 + t)
+           This aligns the keyboard perfectly with Rajaraman's frequency.
+        */
+        src.detune.value = (idx - 62 + t) * 100;
+        
+        src.connect(masterGain);
+        if(reverbState) masterGain.connect(reverbNode).connect(ctx.destination);
+        src.start(); sources[id] = src;
+    }
+
+    function stopS(id) { if(sources[id]) { try { sources[id].stop(); } catch(e){} delete sources[id]; } }
+    function changeVol() { if(masterGain) masterGain.gain.value = document.getElementById('vol').value / 100; }
+    function toggleRev(s) { reverbState = s; if(!s) try { masterGain.disconnect(reverbNode); } catch(e){} }
+    function shiftOct(v) { if(octave+v >= 0 && octave+v <= 6) { octave += v; document.getElementById('oct-v').innerText = octave; } }
+    function shiftStack(v) { stack = Math.max(0, stack+v); document.getElementById('stk-v').innerText = stack; }
+    
+    function shiftSemi(v) {
+        let t = parseInt(document.getElementById('trans-val').innerText) + v;
+        if(t >= -11 && t <= 11) {
+            document.getElementById('trans-val').innerText = t;
+            let noteIdx = t;
+            while (noteIdx < 0) noteIdx += 12;
+            document.getElementById('rootNote').innerText = baseNames[noteIdx % 12];
+        }
+    }
+
+    window.onkeydown = (e) => { let n = pcMap[e.key.toLowerCase()]; if(n && !e.repeat) p(n); };
+    window.onkeyup = (e) => { let n = pcMap[e.key.toLowerCase()]; if(n) s(n); };
+</script>
+</body>
+</html>
