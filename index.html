@@ -20,7 +20,7 @@
             display: flex; flex-direction: column; height: 100vh; width: 100vw;
         }
 
-        /* 🔄 LANDSCAPE OVERLAY & LEFT-TILT ANIMATION */
+        /* 🔄 LANDSCAPE OVERLAY */
         #landscape-notice {
             display: none; position: fixed; inset: 0; background: #000;
             z-index: 1000; flex-direction: column; justify-content: center; align-items: center;
@@ -36,63 +36,63 @@
         }
         @keyframes tilt-left-play {
             0% { transform: rotate(0deg); }
-            50% { transform: rotate(-90deg); } /* Tilts left to match SVG paths */
+            50% { transform: rotate(-90deg); }
             100% { transform: rotate(0deg); }
         }
 
-        /* Top Bar with Domain on Left, Scale on Right */
         .top-bar { 
             background: var(--wood); 
-            padding: 8px 15px; 
+            padding: 5px 15px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
             border-bottom: 2px solid #3d2b1f; 
+            height: 40px;
         }
         
-        .brand-heading {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 13px;
-            letter-spacing: 0.5px;
-            color: var(--gold);
-        }
-
-        .scale-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-        }
+        .brand-heading { font-family: 'Montserrat', sans-serif; font-size: 11px; color: var(--gold); }
+        .scale-controls { display: flex; align-items: center; gap: 8px; font-size: 13px; }
 
         .dashboard { 
-            background: var(--panel); padding: 5px; 
+            background: var(--panel); padding: 4px; 
             display: flex; justify-content: space-around; align-items: center;
-            flex-wrap: nowrap; gap: 5px;
+            height: 45px; gap: 5px;
         }
-        .unit { background: #222; padding: 5px; border-radius: 6px; text-align: center; flex: 1; box-shadow: inset 0 0 5px #000; height: 50px; }
-        
-        /* Centering the Reverb Toggle */
+        .unit { background: #222; padding: 2px; border-radius: 6px; text-align: center; flex: 1; box-shadow: inset 0 0 5px #000; height: 38px; }
         .unit-reverb { display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        
-        .unit label { font-size: 8px; display: block; color: #888; text-transform: uppercase; margin-bottom: 2px; }
-        .unit b { font-size: 14px; color: #fff; }
-        .ctrl-btn { background: #333; border: 1px solid #444; color: white; width: 25px; height: 25px; border-radius: 4px; cursor: pointer; }
+        .unit label { font-size: 7px; display: block; color: #888; text-transform: uppercase; margin-bottom: 1px; }
+        .unit b { font-size: 12px; color: #fff; }
+        .ctrl-btn { background: #333; border: 1px solid #444; color: white; width: 22px; height: 22px; border-radius: 4px; cursor: pointer; font-size: 10px; }
 
-        /* 🎚️ TOGGLE SWITCH */
-        .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
+        .switch { position: relative; display: inline-block; width: 30px; height: 16px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #444; transition: .3s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        .slider:before { position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--gold); }
-        input:checked + .slider:before { transform: translateX(16px); }
+        input:checked + .slider:before { transform: translateX(14px); }
 
-        /* 🎹 KEYBOARD */
-        .keyboard-frame { background: var(--wood); padding: 5px 0 0 0; flex-grow: 1; display: flex; justify-content: center; align-items: stretch; box-shadow: inset 0 10px 30px rgba(0,0,0,0.8); }
+        /* 🎹 KEYBOARD ADJUSTMENT */
+        .keyboard-frame { 
+            background: var(--wood); 
+            padding: 5px 0 15px 0; /* Padding bottom ensures labels are seen */
+            flex-grow: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: stretch; 
+            box-shadow: inset 0 10px 30px rgba(0,0,0,0.8);
+            overflow: hidden;
+        }
         .keys-wrap { display: flex; width: 100%; height: 100%; position: relative; }
-        .k { flex: 1; border-radius: 0 0 4px 4px; cursor: pointer; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 20px; font-weight: bold; font-size: 12px; transition: 0.1s; }
+        
+        .k { 
+            flex: 1; border-radius: 0 0 4px 4px; cursor: pointer; 
+            display: flex; justify-content: center; align-items: flex-end; 
+            padding-bottom: 10px; /* Reduced padding for labels */
+            font-weight: bold; font-size: 11px; transition: 0.1s; 
+        }
         .w-key { background: linear-gradient(#eee, #fff); border: 1px solid #999; color: #999; z-index: 1; }
-        .b-key { max-width: 4.5%; height: 60%; background: linear-gradient(#111, #333); margin: 0 -2.25%; z-index: 2; color: #666; border: 1px solid #000; }
-        .active { background: var(--gold) !important; color: white !important; transform: translateY(10px); box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
+        .b-key { max-width: 4.5%; height: 55%; background: linear-gradient(#111, #333); margin: 0 -2.25%; z-index: 2; color: #666; border: 1px solid #000; }
+        .active { background: var(--gold) !important; color: white !important; transform: translateY(5px); box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
 
         #load-screen { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999; }
         .start-btn { background: none; border: 2px solid var(--gold); color: var(--gold); padding: 15px 60px; font-size: 1.2rem; border-radius: 4px; cursor: pointer; }
@@ -117,7 +117,7 @@
 <div class="top-bar">
     <div class="brand-heading">harmonium.mibsam.online</div>
     <div class="scale-controls">
-        <label style="font-size: 10px; color: #888;">SCALE: </label>
+        <label style="font-size: 9px; color: #888;">SCALE: </label>
         <button class="ctrl-btn" onclick="shiftSemi(-1)">-</button>
         <b id="rootNote">C</b>
         <button class="ctrl-btn" onclick="shiftSemi(1)">+</button>
@@ -177,17 +177,6 @@
         reverbNode = ctx.createConvolver();
         fetch('reverb.wav').then(r => r.arrayBuffer()).then(d => ctx.decodeAudioData(d, b => reverbNode.buffer = b));
         fetch('harmonium-kannan-orig.wav').then(r => r.arrayBuffer()).then(d => ctx.decodeAudioData(d, b => audioBuffer = b));
-        
-        if (navigator.requestMIDIAccess) {
-            navigator.requestMIDIAccess().then(m => {
-                for (let input of m.inputs.values()) {
-                    input.onmidimessage = (msg) => {
-                        let [s, n, v] = msg.data;
-                        if (s === 144 && v > 0) p(n); else if (s === 128 || (s === 144 && v === 0)) s(n);
-                    };
-                }
-            });
-        }
     }
 
     function p(n) {
@@ -207,7 +196,6 @@
         src.buffer = audioBuffer; src.loop = true; src.loopStart = 0.5;
         let t = parseInt(document.getElementById('trans-val').innerText);
         src.detune.value = (idx - 62 + t) * 100;
-        
         src.connect(masterGain);
         if(reverbState) masterGain.connect(reverbNode).connect(ctx.destination);
         src.start(); sources[id] = src;
