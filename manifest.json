@@ -1,0 +1,17 @@
+{
+  "name": "Web Harmonium",
+  "short_name": "Harmonium",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#008080",
+  "description": "A professional-grade mini harmonium for Riyaaz and practice.",
+  "icons": [
+    {
+      "src": "webharmonium.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}
