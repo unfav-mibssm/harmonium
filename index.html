@@ -2,44 +2,97 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Harmonium Pro Elite</title>
     <style>
         :root { --gold: #d4af37; --bg: #0b0b0b; --panel: #1a1a1a; --wood: #2a1b0a; }
-        * { -webkit-tap-highlight-color: transparent !important; outline: none; box-sizing: border-box; }
-        body { background: var(--bg); color: var(--gold); font-family: sans-serif; margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+        
+        * { 
+            -webkit-tap-highlight-color: transparent !important; 
+            outline: none; box-sizing: border-box; 
+            user-select: none; -webkit-user-select: none;
+        }
 
-        /* Rotate Screen Notice */
+        body { 
+            background: var(--bg); color: var(--gold); font-family: sans-serif; 
+            margin: 0; padding: 0; overflow: hidden; 
+            display: flex; flex-direction: column; height: 100vh; width: 100vw;
+        }
+
+        /* 🔄 LANDSCAPE OVERLAY */
         #landscape-notice {
             display: none; position: fixed; inset: 0; background: #000;
             z-index: 1000; flex-direction: column; justify-content: center; align-items: center;
             text-align: center; color: var(--gold);
         }
-        @media screen and (max-width: 900px) and (orientation: portrait) { #landscape-notice { display: flex; } }
+        @media screen and (orientation: portrait) { #landscape-notice { display: flex; } }
 
-        /* UI Elements */
-        .top-bar { background: var(--wood); padding: 10px; text-align: center; border-bottom: 2px solid #3d2b1f; }
-        .dashboard { background: var(--panel); padding: 10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .unit { background: #222; padding: 8px; border-radius: 6px; text-align: center; box-shadow: inset 0 0 8px #000; }
-        .unit label { font-size: 9px; display: block; color: #888; margin-bottom: 4px; }
-        .ctrl-btn { background: #333; border: 1px solid #444; color: white; width: 30px; height: 30px; border-radius: 4px; cursor: pointer; }
-
-        .keyboard-frame { background: var(--wood); padding: 20px 10px; flex-grow: 1; display: flex; justify-content: center; overflow-x: auto; box-shadow: inset 0 10px 30px rgba(0,0,0,0.8); }
-        .keys-wrap { display: flex; position: relative; height: 100%; max-height: 250px; }
+        .top-bar { background: var(--wood); padding: 5px; text-align: center; border-bottom: 2px solid #3d2b1f; font-size: 14px; }
         
-        .k { border-radius: 0 0 6px 6px; cursor: pointer; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 15px; font-weight: bold; font-size: 14px; transition: 0.1s; user-select: none; }
-        .w-key { width: 42px; height: 100%; background: linear-gradient(#eee, #fff); border: 1px solid #999; color: #999; z-index: 1; }
-        .b-key { width: 30px; height: 60%; background: linear-gradient(#111, #333); margin: 0 -15px; z-index: 2; color: #666; border: 1px solid #000; }
-        
-        .active { background: var(--gold) !important; color: white !important; transform: translateY(8px); box-shadow: inset 0 0 15px rgba(0,0,0,0.6); }
+        .dashboard { 
+            background: var(--panel); padding: 5px; 
+            display: flex; justify-content: space-around; align-items: center;
+            flex-wrap: nowrap; gap: 5px;
+        }
+        .unit { background: #222; padding: 5px; border-radius: 6px; text-align: center; flex: 1; box-shadow: inset 0 0 5px #000; }
+        .unit label { font-size: 8px; display: block; color: #888; text-transform: uppercase; }
+        .unit b { font-size: 14px; color: #fff; }
+        .ctrl-btn { background: #333; border: 1px solid #444; color: white; width: 25px; height: 25px; border-radius: 4px; cursor: pointer; }
 
-        #load-screen { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999; }
-        .start-btn { background: none; border: 2px solid var(--gold); color: var(--gold); padding: 15px 60px; font-size: 1.2rem; border-radius: 4px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
+        /* 🎚️ GOLD TOGGLE SWITCH */
+        .switch { position: relative; display: inline-block; width: 34px; height: 18px; vertical-align: middle; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #444; transition: .3s; border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px;
+            background-color: white; transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--gold); }
+        input:checked + .slider:before { transform: translateX(16px); }
+
+        /* 🎹 FULL SCREEN KEYS */
+        .keyboard-frame {
+            background: var(--wood); padding: 5px 0 0 0; 
+            flex-grow: 1; display: flex; justify-content: center; align-items: stretch;
+            box-shadow: inset 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .keys-wrap { display: flex; width: 100%; height: 100%; position: relative; }
+        
+        .k {
+            flex: 1; border-radius: 0 0 4px 4px; cursor: pointer; display: flex; 
+            justify-content: center; align-items: flex-end; padding-bottom: 20px; 
+            font-weight: bold; font-size: 12px; transition: 0.1s;
+        }
+        .w-key { background: linear-gradient(#eee, #fff); border: 1px solid #999; color: #999; z-index: 1; }
+        .b-key { 
+            max-width: 4.5%; height: 60%; background: linear-gradient(#111, #333); 
+            margin: 0 -2.25%; z-index: 2; color: #666; border: 1px solid #000; 
+        }
+        
+        .active { 
+            background: var(--gold) !important; color: white !important; 
+            transform: translateY(10px); box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+        }
+
+        #load-screen {
+            position: fixed; inset: 0; background: #000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999;
+        }
+        .start-btn {
+            background: none; border: 2px solid var(--gold); color: var(--gold);
+            padding: 15px 60px; font-size: 1.2rem; border-radius: 4px; cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-<div id="landscape-notice"><h2>🔄 Rotate for Harmonium</h2></div>
+<div id="landscape-notice">
+    <div style="font-size: 40px;">🔄</div>
+    <h2 style="margin:10px 0;">Rotate for Full Screen</h2>
+</div>
 
 <div id="load-screen">
     <h2 style="letter-spacing: 5px;">HARMONIUM PRO</h2>
@@ -47,17 +100,21 @@
 </div>
 
 <div class="top-bar">
-    <label style="font-size: 10px;">TRANSPOSE: </label>
+    <label>SCALE: </label>
     <button class="ctrl-btn" onclick="shiftSemi(-1)">-</button>
-    <b style="margin: 0 10px; font-size: 1.2rem;"><span id="rootNote">C</span> (<span id="trans-val">0</span>)</b>
+    <b id="rootNote" style="margin: 0 10px;">C</b>
     <button class="ctrl-btn" onclick="shiftSemi(1)">+</button>
+    <span id="trans-val" style="display:none">0</span>
 </div>
 
 <div class="dashboard">
-    <div class="unit"><label>VOL</label><input type="range" id="vol" min="0" max="100" value="30" oninput="changeVol()"></div>
-    <div class="unit"><label>OCTAVE</label><button class="ctrl-btn" onclick="shiftOct(-1)">-</button> <b id="oct-v">3</b> <button class="ctrl-btn" onclick="shiftOct(1)">+</button></div>
-    <div class="unit"><label>REEDS</label><button class="ctrl-btn" onclick="shiftStack(-1)">-</button> <b id="stk-v">0</b> <button class="ctrl-btn" onclick="shiftStack(1)">+</button></div>
-    <div class="unit"><label>REVERB</label><input type="checkbox" style="transform:scale(1.3)" onchange="toggleRev(this.checked)"></div>
+    <div class="unit"><label>VOL</label><input type="range" id="vol" min="0" max="100" value="30" style="width:90%" oninput="changeVol()"></div>
+    <div class="unit"><label>OCT</label> <button class="ctrl-btn" onclick="shiftOct(-1)">-</button> <b id="oct-v">3</b> <button class="ctrl-btn" onclick="shiftOct(1)">+</button></div>
+    <div class="unit"><label>REEDS</label> <button class="ctrl-btn" onclick="shiftStack(-1)">-</button> <b id="stk-v">0</b> <button class="ctrl-btn" onclick="shiftStack(1)">+</button></div>
+    <div class="unit">
+        <label>REVERB</label>
+        <label class="switch"><input type="checkbox" onchange="toggleRev(this.checked)"><span class="slider"></span></label>
+    </div>
 </div>
 
 <div class="keyboard-frame">
@@ -91,8 +148,6 @@
 <script>
     let ctx, masterGain, reverbNode, audioBuffer;
     let sources = {}, octave = 3, stack = 0, reverbState = false;
-    
-    // Exact mapping from Rajaraman's engine
     const pcMap = { "`":55,"1":56,"q":57,"2":58,"w":59,"e":60,"4":61,"r":62,"5":63,"t":64,"y":65,"7":66,"u":67,"8":68,"i":69,"9":70,"o":71,"p":72,"-":73,"[":74,"=":75,"]":76,"\\":77 };
     const baseNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     const octaveMap = [-36, -24, -12, 0, 12, 24, 36];
@@ -101,7 +156,6 @@
         document.getElementById('load-screen').style.display = 'none';
         ctx = new (window.AudioContext || window.webkitAudioContext)();
         masterGain = ctx.createGain(); masterGain.gain.value = 0.3; masterGain.connect(ctx.destination);
-        
         reverbNode = ctx.createConvolver();
         fetch('reverb.wav').then(r => r.arrayBuffer()).then(d => ctx.decodeAudioData(d, b => reverbNode.buffer = b));
         fetch('harmonium-kannan-orig.wav').then(r => r.arrayBuffer()).then(d => ctx.decodeAudioData(d, b => audioBuffer = b));
@@ -120,8 +174,7 @@
 
     function p(n) {
         if(!audioBuffer) return;
-        const keyEl = document.getElementById('k-'+n);
-        if(keyEl) keyEl.classList.add('active');
+        if(document.getElementById('k-'+n)) document.getElementById('k-'+n).classList.add('active');
         play(n + octaveMap[octave], n);
         for(let i=1; i<=stack; i++) play(n + octaveMap[octave + i], n + "_s" + i);
     }
@@ -134,15 +187,9 @@
     function play(idx, id) {
         stopS(id); let src = ctx.createBufferSource();
         src.buffer = audioBuffer; src.loop = true; src.loopStart = 0.5;
-        
         let t = parseInt(document.getElementById('trans-val').innerText);
         
-        /* MATCHING THE PITCH: 
-           If Transpose C sounded like A#, we were 2 semitones too high.
-           Original logic: (idx - 60 + t)
-           Fixed logic: (idx - 62 + t)
-           This aligns the keyboard perfectly with Rajaraman's frequency.
-        */
+        // BACK TO EXACT MATH: Subtracting 62 aligns your C with his C
         src.detune.value = (idx - 62 + t) * 100;
         
         src.connect(masterGain);
@@ -160,12 +207,10 @@
         let t = parseInt(document.getElementById('trans-val').innerText) + v;
         if(t >= -11 && t <= 11) {
             document.getElementById('trans-val').innerText = t;
-            let noteIdx = t;
-            while (noteIdx < 0) noteIdx += 12;
+            let noteIdx = t; while (noteIdx < 0) noteIdx += 12;
             document.getElementById('rootNote').innerText = baseNames[noteIdx % 12];
         }
     }
-
     window.onkeydown = (e) => { let n = pcMap[e.key.toLowerCase()]; if(n && !e.repeat) p(n); };
     window.onkeyup = (e) => { let n = pcMap[e.key.toLowerCase()]; if(n) s(n); };
 </script>
